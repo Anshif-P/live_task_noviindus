@@ -10,14 +10,14 @@ class ApiService {
   // ignore: prefer_final_fields
   static Map<String, String>? _header = {
     'Content-Type': 'application/json',
-    'token': ''
+    'access': ''
   };
 
   static EitherResponse postApi(String url, Map map,
       [String? userToken]) async {
     final uri = Uri.parse(url);
     if (userToken != null) {
-      _header!['usertoken'] = userToken;
+      _header!['access'] = userToken;
     }
     final body = jsonEncode(map);
     dynamic fetchedData;
@@ -38,14 +38,20 @@ class ApiService {
   }
 
   static EitherResponse getApi(String url, [String? token]) async {
+    print(
+        "$url, ---------------------------------------------------------  $token");
+
     final uri = Uri.parse(url);
     if (token != null) {
-      _header!['usertoken'] = token;
+      _header!['access'] = token;
     }
     try {
       dynamic fetchedData;
       final response = await http.get(uri, headers: _header);
+      print('hello get response ------------------------');
+      print(response.body);
       fetchedData = _getResponse(response);
+
       return Right(fetchedData);
     } on SocketException {
       return Left(InternetException());
