@@ -66,7 +66,7 @@ class ScreenHome extends StatelessWidget {
                   labelColor: Colors.white, // Label color when selected
                   unselectedLabelColor:
                       Colors.black, // Label color when unselected
-                  unselectedLabelStyle: TextStyle(color: Colors.white),
+                  unselectedLabelStyle: const TextStyle(color: Colors.white),
                   tabs: const [
                     Tab(
                       child: TabWithIcon(

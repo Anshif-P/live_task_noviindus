@@ -1,77 +1,67 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:either_dart/either.dart';
-import 'package:dio/dio.dart';
-import 'package:noviindus_live_task_/src/util/app_exception/app_exception.dart';
 
-import '../../util/typedef/type_def.dart';
+import 'package:http/http.dart' as http;
+import 'package:noviindus_live_task_/src/util/app_exception/app_exception.dart';
+import 'package:noviindus_live_task_/src/util/typedef/type_def.dart';
 
 class ApiService {
-  static final Map<String, String> _header = {
+  // ignore: prefer_final_fields
+  static Map<String, String>? _header = {
     'Content-Type': 'application/json',
-    'Authorization': ''
+    'token': ''
   };
 
-  static final Dio _dio = Dio();
-
-  static EitherResponse postApi(String url, Map<String, dynamic> map,
-      [String? token]) async {
-    if (token != null) {
-      _header['Authorization'] = 'Bearer $token';
+  static EitherResponse postApi(String url, Map map,
+      [String? userToken]) async {
+    final uri = Uri.parse(url);
+    if (userToken != null) {
+      _header!['usertoken'] = userToken;
     }
-    final formData = FormData.fromMap(map);
+    final body = jsonEncode(map);
+    dynamic fetchedData;
     try {
-      final response = await _dio.post(url,
-          data: formData, options: Options(headers: _header));
-      final fetchedData = _getResponse(response);
+      final response = await http.post(uri, body: body, headers: _header);
+      print(response.body);
+
+      fetchedData = _getResponse(response);
+
       return Right(fetchedData);
-      // ignore: deprecated_member_use
-    } on DioError catch (e) {
-      if (e.error is SocketException) {
-        return Left(InternetException());
-      } else {
-        return Left(BadRequestException());
-      }
+    } on SocketException {
+      return Left(InternetException());
+    } on http.ClientException {
+      return Left(RequestTimeOutException());
     } catch (e) {
       return Left(BadRequestException());
     }
-  }
-
-  static EitherResponse postFormData(String url, Map<String, dynamic> map,
-      [String? token]) async {
-    if (token != null) {
-      _header['Authorization'] = 'Bearer $token';
-    }
-    final formData = FormData.fromMap(map);
-    final response = await _dio.postUri(Uri.parse(url),
-        data: formData, options: Options(headers: _header));
-    final fetchedData = _getResponse(response);
-    return Right(fetchedData);
   }
 
   static EitherResponse getApi(String url, [String? token]) async {
+    final uri = Uri.parse(url);
     if (token != null) {
-      _header['Authorization'] = 'Bearer $token';
+      _header!['usertoken'] = token;
     }
     try {
-      final response = await _dio.get(url, options: Options(headers: _header));
-      final fetchedData = _getResponse(response);
+      dynamic fetchedData;
+      final response = await http.get(uri, headers: _header);
+      fetchedData = _getResponse(response);
       return Right(fetchedData);
-      // ignore: deprecated_member_use
-    } on DioError catch (e) {
-      if (e.error is SocketException) {
-        return Left(InternetException());
-      } else {
-        return Left(BadRequestException());
-      }
+    } on SocketException {
+      return Left(InternetException());
+    } on http.ClientException {
+      return Left(RequestTimeOutException());
     } catch (e) {
       return Left(BadRequestException());
     }
   }
 
-  static _getResponse(Response response) {
+  static _getResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:
-        return response.data;
+        return (jsonDecode(response.body));
+      case 202:
+        return (jsonDecode(response.body));
       case 400:
         return throw BadRequestException();
       default:

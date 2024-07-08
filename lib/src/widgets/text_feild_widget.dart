@@ -31,6 +31,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       child: Container(
         color: AppColor.backgroundColor,
         child: TextFormField(
+          style: TextStyle(color: Colors.white),
           keyboardType: widget.isNumberKeyboard
               ? TextInputType.number
               : TextInputType.text,
@@ -58,7 +59,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.black),
+              borderSide: const BorderSide(color: AppColor.grey),
               borderRadius: BorderRadius.circular(10.0),
             ),
             enabledBorder: OutlineInputBorder(

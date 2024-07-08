@@ -1,8 +1,7 @@
 class Urls {
-  final String baseUrl = 'https://flutter-amr.noviindus.in/api/';
-  final String login = 'Login';
-  final String getPatients = 'PatientList';
-  final String getBranches = 'BranchList';
-  final String getTreatments = 'TreatmentList';
-  final String registerPatient = 'PatientUpdate';
+  final String baseUrl = 'https://frijo.noviindus.in/api/';
+  final String registerUrl = 'otp_verified';
+  final String getCategory = 'category_list';
+  final String getHomeData = 'home';
+  final String my_feed = 'my_feed ';
 }
